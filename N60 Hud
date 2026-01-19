@@ -1,0 +1,95 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+
+-- إنشاء GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- إطار الخلفية
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 320, 0, 220)
+frame.Position = UDim2.new(0.5, -160, 0.5, -110)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+
+-- زوايا ناعمة
+local corner = Instance.new("UICorner", frame)
+corner.CornerRadius = UDim.new(0, 18)
+
+-- عنوان
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Text = "اكتب رسالة"
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(200,200,255)
+title.Font = Enum.Font.GothamBold
+title.TextScaled = true
+
+-- TextBox
+local textbox = Instance.new("TextBox", frame)
+textbox.Size = UDim2.new(0.85, 0, 0, 40)
+textbox.Position = UDim2.new(0.075, 0, 0.35, 0)
+textbox.PlaceholderText = "اكتب هنا"
+textbox.Text = ""
+textbox.BackgroundColor3 = Color3.fromRGB(40,40,70)
+textbox.TextColor3 = Color3.new(1,1,1)
+textbox.Font = Enum.Font.Gotham
+textbox.TextScaled = true
+Instance.new("UICorner", textbox).CornerRadius = UDim.new(0,10)
+
+-- زر
+local button = Instance.new("TextButton", frame)
+button.Size = UDim2.new(0.5, 0, 0, 40)
+button.Position = UDim2.new(0.25, 0, 0.65, 0)
+button.Text = "إرسال"
+button.BackgroundColor3 = Color3.fromRGB(80,120,255)
+button.TextColor3 = Color3.new(1,1,1)
+button.Font = Enum.Font.GothamBold
+button.TextScaled = true
+Instance.new("UICorner", button).CornerRadius = UDim.new(0,12)
+
+-- 🌟 نجوم متحركة
+for i = 1, 30 do
+	local star = Instance.new("Frame", frame)
+	star.Size = UDim2.new(0, math.random(2,4), 0, math.random(2,4))
+	star.Position = UDim2.new(math.random(),0,math.random(),0)
+	star.BackgroundColor3 = Color3.fromRGB(255,255,255)
+	star.BackgroundTransparency = 0.3
+	star.BorderSizePixel = 0
+	Instance.new("UICorner", star).CornerRadius = UDim.new(1,0)
+
+	local speed = math.random(10,40)
+
+	RunService.RenderStepped:Connect(function(dt)
+		star.Position = star.Position + UDim2.new(0,0, speed*dt/100,0)
+		if star.Position.Y.Scale > 1 then
+			star.Position = UDim2.new(math.random(),0,0,0)
+		end
+	end)
+end
+
+-- عند الضغط على الزر
+button.MouseButton1Click:Connect(function()
+	local text = textbox.Text
+	if text ~= "" then
+		local character = player.Character or player.CharacterAdded:Wait()
+		local billboard = Instance.new("BillboardGui")
+		billboard.Size = UDim2.new(0, 200, 0, 50)
+		billboard.StudsOffset = Vector3.new(0, 3, 0)
+		billboard.Adornee = character:WaitForChild("Head")
+		billboard.Parent = character
+
+		local label = Instance.new("TextLabel", billboard)
+		label.Size = UDim2.new(1,0,1,0)
+		label.BackgroundTransparency = 1
+		label.TextScaled = true
+		label.Text = text
+		label.TextColor3 = Color3.new(1,1,1)
+		label.Font = Enum.Font.GothamBold
+
+		game:GetService("Debris"):AddItem(billboard, 5)
+	end
+end)
